@@ -19,7 +19,7 @@ exports.getAuthUser = (req, res) => {
 };
 
 exports.getUserById = async (req, res, next, id) => {
-  const user = await User.findOne({ _id: id });
+  const user = await User.findOne({ _id: id }).exec();
   req.profile = user;
 
   const profileId = mongoose.Types.ObjectId(req.profile._id);

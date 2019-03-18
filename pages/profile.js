@@ -1,4 +1,5 @@
 import { authInitialProps } from "../lib/auth";
+import { getProfile } from "../lib/api";
 // import Paper from "@material-ui/core/Paper";
 // import List from "@material-ui/core/List";
 // import ListItem from "@material-ui/core/ListItem";
@@ -14,7 +15,16 @@ import { authInitialProps } from "../lib/auth";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 class Profile extends React.Component {
-  state = {};
+  state = { user: null };
+
+  componentDidMount() {
+    const { userId } = this.props;
+    getProfile(userId)
+      .then(user => {
+        this.setState({ user });
+      })
+      .catch(err => console.log(err));
+  }
 
   render() {
     return <div>Profile</div>;
