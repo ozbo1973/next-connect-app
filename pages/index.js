@@ -1,3 +1,5 @@
+import { authInitialProps } from "../lib/auth";
+
 // import CircularProgress from "@material-ui/core/CircularProgress";
 // import Drawer from "@material-ui/core/Drawer";
 // import Typography from "@material-ui/core/Typography";
@@ -50,5 +52,7 @@ const styles = theme => ({
     margin: "0 auto"
   }
 });
+
+Index.getInitialProps = authInitialProps();
 
 export default withStyles(styles)(Index);

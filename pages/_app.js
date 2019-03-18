@@ -1,6 +1,9 @@
 /* Next.js / MUI integration here: https://github.com/mui-org/material-ui/tree/master/examples/nextjs */
 import App, { Container } from "next/app";
 import Head from "next/head";
+import withNProgress from "next-nprogress";
+import NProgressStyles from "next-nprogress/styles";
+
 import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import JssProvider from "react-jss/lib/JssProvider";
@@ -49,9 +52,13 @@ class MyApp extends App {
             <Component pageContext={this.pageContext} {...pageProps} />
           </MuiThemeProvider>
         </JssProvider>
+        <NProgressStyles color="#e34235" spinner={false} />
       </Container>
     );
   }
 }
 
-export default MyApp;
+const msDelay = 200;
+const progressConfig = { trickleSpeed: 50 };
+
+export default withNProgress(msDelay, progressConfig)(MyApp);

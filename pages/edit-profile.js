@@ -1,3 +1,4 @@
+import { authInitialProps } from "../lib/auth";
 // import Avatar from "@material-ui/core/Avatar";
 // import FormControl from "@material-ui/core/FormControl";
 // import Paper from "@material-ui/core/Paper";
@@ -83,4 +84,5 @@ const styles = theme => ({
   }
 });
 
+EditProfile.getInitialProps = authInitialProps(true);
 export default withStyles(styles)(EditProfile);
