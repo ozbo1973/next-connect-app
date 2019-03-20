@@ -1,33 +1,93 @@
+import Link from "next/link";
 import { authInitialProps } from "../lib/auth";
-import { getProfile } from "../lib/api";
-// import Paper from "@material-ui/core/Paper";
-// import List from "@material-ui/core/List";
-// import ListItem from "@material-ui/core/ListItem";
-// import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-// import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-// import ListItemText from "@material-ui/core/ListItemText";
-// import Avatar from "@material-ui/core/Avatar";
-// import IconButton from "@material-ui/core/IconButton";
-// import Typography from "@material-ui/core/Typography";
-// import CircularProgress from "@material-ui/core/CircularProgress";
-// import Divider from "@material-ui/core/Divider";
-// import Edit from "@material-ui/icons/Edit";
+import { getUser } from "../lib/api";
+
+import Paper from "@material-ui/core/Paper";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Divider from "@material-ui/core/Divider";
+import Edit from "@material-ui/icons/Edit";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 class Profile extends React.Component {
-  state = { user: null };
+  state = { user: null, isAuth: false, isLoading: true };
 
   componentDidMount() {
-    const { userId } = this.props;
-    getProfile(userId)
-      .then(user => {
-        this.setState({ user });
-      })
-      .catch(err => console.log(err));
+    const { userId, auth } = this.props;
+
+    getUser(userId).then(user => {
+      const isAuth = auth.user._id === userId;
+      this.setState({
+        user,
+        isAuth,
+        isLoading: false
+      });
+    });
   }
 
   render() {
-    return <div>Profile</div>;
+    const { classes } = this.props;
+    const { isLoading, user, isAuth } = this.state;
+    return (
+      <Paper className={classes.root} elevation={4}>
+        <Typography
+          className={classes.title}
+          variant="h5"
+          component="h1"
+          align="center"
+          gutterBottom
+        >
+          Profile
+        </Typography>
+
+        {isLoading ? (
+          <div className={classes.progressContainer}>
+            <CircularProgress
+              className={classes.progress}
+              size={55}
+              thickness={4}
+            />
+          </div>
+        ) : (
+          <List dense>
+            <ListItem>
+              <ListItemAvatar>
+                <Avatar src={user.avatar} className={classes.bigAvatar} />
+              </ListItemAvatar>
+              <ListItemText primary={user.name} secondary={user.email} />
+
+              {isAuth ? (
+                <ListItemSecondaryAction>
+                  <Link href="/edit-profile">
+                    <a>
+                      <IconButton color="primary">
+                        <Edit />
+                      </IconButton>
+                    </a>
+                  </Link>
+                </ListItemSecondaryAction>
+              ) : (
+                <div>Follow</div>
+              )}
+            </ListItem>
+            <ListItem>
+              <Divider />
+              <ListItemText
+                primary={user.about}
+                secondary={`joined: ${user.createdAt}`}
+              />
+            </ListItem>
+          </List>
+        )}
+      </Paper>
+    );
   }
 }
 

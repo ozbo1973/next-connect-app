@@ -77,4 +77,5 @@ exports.checkAuth = (req, res, next) => {
     return next();
   }
   res.redirect("/signin");
+  return;
 };
