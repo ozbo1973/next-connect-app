@@ -105,7 +105,7 @@ exports.addFollowing = async (req, res, next) => {
   const { followId } = req.body;
 
   await User.findOneAndUpdate(
-    { _id: req.user.id },
+    { _id: req.user._id },
     { $push: { following: followId } }
   );
 
@@ -126,7 +126,7 @@ exports.deleteFollowing = async (req, res, next) => {
   const { followId } = req.body;
 
   await User.findOneAndUpdate(
-    { _id: req.user.id },
+    { _id: req.user._id },
     { $pull: { following: followId } }
   );
 

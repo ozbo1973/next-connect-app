@@ -2,6 +2,8 @@ import Link from "next/link";
 import { authInitialProps } from "../lib/auth";
 import { getUser } from "../lib/api";
 
+import FollowUser from "../components/profile/FollowUser";
+
 import Paper from "@material-ui/core/Paper";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -17,24 +19,43 @@ import Edit from "@material-ui/icons/Edit";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 class Profile extends React.Component {
-  state = { user: null, isAuth: false, isLoading: true };
+  state = { user: null, isAuth: false, isLoading: true, isFollowing: false };
 
   componentDidMount() {
     const { userId, auth } = this.props;
 
     getUser(userId).then(user => {
       const isAuth = auth.user._id === userId;
+      const isFollowing = this.checkFollowing(auth, user);
       this.setState({
         user,
         isAuth,
+        isFollowing,
         isLoading: false
       });
     });
   }
 
+  checkFollowing = (auth, user) => {
+    return (
+      user.followers.findIndex(follower => follower._id === auth.user._id) > -1
+    );
+  };
+
+  toggleFollow = sendRequest => {
+    const { userId } = this.props;
+    const { isFollowing } = this.state;
+
+    sendRequest(userId)
+      .then(() => {
+        this.setState({ isFollowing: !isFollowing });
+      })
+      .catch(err => console.log(err));
+  };
+
   render() {
     const { classes } = this.props;
-    const { isLoading, user, isAuth } = this.state;
+    const { isLoading, isFollowing, user, isAuth } = this.state;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography
@@ -74,7 +95,10 @@ class Profile extends React.Component {
                   </Link>
                 </ListItemSecondaryAction>
               ) : (
-                <div>Follow</div>
+                <FollowUser
+                  isFollowing={isFollowing}
+                  toggleFollow={this.toggleFollow}
+                />
               )}
             </ListItem>
             <ListItem>
