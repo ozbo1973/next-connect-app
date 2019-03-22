@@ -1,5 +1,5 @@
 import { authInitialProps } from "../lib/auth";
-import { getAuthUser } from "../lib/api";
+import { getAuthUser, userDataSave } from "../lib/api";
 
 import Avatar from "@material-ui/core/Avatar";
 import FormControl from "@material-ui/core/FormControl";
@@ -27,18 +27,19 @@ class EditProfile extends React.Component {
     avatar: "",
     email: "",
     about: "",
+    avatarPreview: "",
     isLoading: false
   };
 
   componentDidMount() {
     const { auth } = this.props;
     this.setState({ isLoading: true });
+    this.userData = new FormData();
 
     getAuthUser(auth.user._id)
       .then(user => {
-        const { data } = user;
         this.setState({
-          ...data,
+          ...user,
           isLoading: false
         });
       })
@@ -48,9 +49,40 @@ class EditProfile extends React.Component {
       });
   }
 
+  handleChange = e => {
+    let inputValue;
+
+    if (e.target.name === "avatar") {
+      inputValue = e.target.files[0];
+      this.setState({ avatarPreview: this.createImagePreview(inputValue) });
+    } else {
+      inputValue = e.target.value;
+    }
+
+    this.userData.set(e.target.name, inputValue);
+    this.setState({ [e.target.name]: inputValue });
+  };
+
+  createImagePreview = file => URL.createObjectURL(file);
+
+  handleSubmit = e => {
+    e.preventDefault();
+    userDataSave(this.state._id, this.userData).then(data => {
+      console.log(data);
+    });
+  };
+
   render() {
     const { classes } = this.props;
-    const { _id, name, email, about, avatar, isLoading } = this.state;
+    const {
+      _id,
+      name,
+      email,
+      about,
+      avatar,
+      avatarPreview,
+      isLoading
+    } = this.state;
 
     return (
       <div className={classes.root}>
@@ -62,13 +94,16 @@ class EditProfile extends React.Component {
             Edit Profile
           </Typography>
 
-          <form className={classes.form}>
+          <form onSubmit={this.handleSubmit} className={classes.form}>
             {isLoading ? (
               <Avatar className={classes.bigAvatar}>
                 <FaceTwoTone />
               </Avatar>
             ) : (
-              <Avatar src={avatar} className={classes.bigAvatar} />
+              <Avatar
+                src={avatarPreview || avatar}
+                className={classes.bigAvatar}
+              />
             )}
             <input
               type="file"
