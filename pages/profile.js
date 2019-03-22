@@ -3,6 +3,7 @@ import { authInitialProps } from "../lib/auth";
 import { getUser } from "../lib/api";
 
 import FollowUser from "../components/profile/FollowUser";
+import DeleteUser from "../components/profile/DeleteUser";
 
 import Paper from "@material-ui/core/Paper";
 import List from "@material-ui/core/List";
@@ -54,7 +55,7 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, userId } = this.props;
     const { isLoading, isFollowing, user, isAuth } = this.state;
     return (
       <Paper className={classes.root} elevation={4}>
@@ -93,6 +94,7 @@ class Profile extends React.Component {
                       </IconButton>
                     </a>
                   </Link>
+                  <DeleteUser userId={userId} />
                 </ListItemSecondaryAction>
               ) : (
                 <FollowUser

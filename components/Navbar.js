@@ -41,7 +41,7 @@ const renderAuthButtons = user => {
       <Button>
         <ActiveLink href={`/profile/${user._id}`}>Profile</ActiveLink>
       </Button>
-      <Button onClick={signoutUser} variant="outlined">
+      <Button onClick={() => signoutUser(false)} variant="outlined">
         Sign out
       </Button>
     </div>
