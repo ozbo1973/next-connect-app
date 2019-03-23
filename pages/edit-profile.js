@@ -1,17 +1,14 @@
 import { authInitialProps } from "../lib/auth";
+import Router from "next/router";
 import { getAuthUser, userDataSave } from "../lib/api";
+
+import ShowDialog from "../components/ShowDialog";
 
 import Avatar from "@material-ui/core/Avatar";
 import FormControl from "@material-ui/core/FormControl";
 import Paper from "@material-ui/core/Paper";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
-import Snackbar from "@material-ui/core/Snackbar";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import VerifiedUserTwoTone from "@material-ui/icons/VerifiedUserTwoTone";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
@@ -28,6 +25,11 @@ class EditProfile extends React.Component {
     email: "",
     about: "",
     avatarPreview: "",
+    error: null,
+    userUpdated: null,
+    openSuccess: false,
+    openError: false,
+    isSaving: false,
     isLoading: false
   };
 
@@ -63,13 +65,29 @@ class EditProfile extends React.Component {
     this.setState({ [e.target.name]: inputValue });
   };
 
+  showError = err => {
+    const error = (err.response && err.response.data) || err.message;
+    this.setState({ error, openError: true, isSaving: false });
+  };
+
+  handleClose = () => {
+    this.setState({ openError: false });
+  };
+
   createImagePreview = file => URL.createObjectURL(file);
 
   handleSubmit = e => {
     e.preventDefault();
-    userDataSave(this.state._id, this.userData).then(data => {
-      console.log(data);
-    });
+    this.setState({ isSaving: true });
+
+    userDataSave(this.state._id, this.userData)
+      .then(userUpdated => {
+        this.setState({ openSuccess: true, userUpdated });
+        setTimeout(() => {
+          Router.push(`/profile/${this.state._id}`);
+        }, 3000);
+      })
+      .catch(this.showError);
   };
 
   render() {
@@ -81,7 +99,12 @@ class EditProfile extends React.Component {
       about,
       avatar,
       avatarPreview,
-      isLoading
+      isLoading,
+      isSaving,
+      error,
+      openError,
+      openSuccess,
+      userUpdated
     } = this.state;
 
     return (
@@ -155,17 +178,42 @@ class EditProfile extends React.Component {
               type="submit"
               color="primary"
               variant="contained"
-              disabled={isLoading}
+              disabled={isSaving || isLoading}
               fullWidth
               className={classes.submit}
             >
-              Save
+              {isSaving ? "Saving..." : "Save"}
             </Button>
           </form>
         </Paper>
+        <ShowDialog
+          title={this.renderDialogTitle(classes)}
+          error={error}
+          openError={openError}
+          openSuccess={openSuccess}
+          closeSnack={this.handleClose}
+          contentText={this.renderDialogContent(userUpdated)}
+        />
       </div>
     );
   }
+
+  renderDialogTitle = classes => {
+    return (
+      <React.Fragment>
+        <VerifiedUserTwoTone className={classes.icon} />
+        Profile Updated
+      </React.Fragment>
+    );
+  };
+
+  renderDialogContent = user => {
+    return (
+      <React.Fragment>
+        User {user && user.name} has successfully been updated.
+      </React.Fragment>
+    );
+  };
 }
 
 const styles = theme => ({
