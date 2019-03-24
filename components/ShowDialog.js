@@ -18,7 +18,8 @@ const ShowDialog = ({
   openSuccess,
   title,
   contentText,
-  actions
+  actions,
+  snackSuccess
 }) => {
   return (
     <React.Fragment>
@@ -28,7 +29,13 @@ const ShowDialog = ({
           open={openError}
           onClose={closeSnack}
           autoHideDuration={4000}
-          message={<span className={classes.snack}>{error}</span>}
+          message={
+            <span
+              className={snackSuccess ? classes.snackSuccess : classes.snack}
+            >
+              {error}
+            </span>
+          }
         />
       )}
 
@@ -51,6 +58,9 @@ const ShowDialog = ({
 const styles = theme => ({
   snack: {
     color: theme.palette.secondary.light
+  },
+  snackSuccess: {
+    color: theme.palette.primary.light
   }
 });
 
