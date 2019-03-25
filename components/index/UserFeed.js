@@ -27,7 +27,6 @@ class UserFeed extends React.Component {
     const { auth } = this.props;
 
     getUserFeed(auth.user._id).then(users => {
-      console.log(users);
       this.setState({ users });
     });
   }

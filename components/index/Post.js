@@ -1,23 +1,74 @@
-// import Badge from "@material-ui/core/Badge";
-// import Card from "@material-ui/core/Card";
-// import CardHeader from "@material-ui/core/CardHeader";
-// import CardContent from "@material-ui/core/CardContent";
-// import CardActions from "@material-ui/core/CardActions";
-// import Typography from "@material-ui/core/Typography";
-// import IconButton from "@material-ui/core/IconButton";
-// import Divider from "@material-ui/core/Divider";
-// import Avatar from "@material-ui/core/Avatar";
-// import Comment from "@material-ui/icons/Comment";
-// import DeleteTwoTone from "@material-ui/icons/DeleteTwoTone";
-// import Favorite from "@material-ui/icons/Favorite";
-// import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
+import Link from "next/link";
+
+import Badge from "@material-ui/core/Badge";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+import Divider from "@material-ui/core/Divider";
+import Avatar from "@material-ui/core/Avatar";
+import Comment from "@material-ui/icons/Comment";
+import DeleteTwoTone from "@material-ui/icons/DeleteTwoTone";
+import Favorite from "@material-ui/icons/Favorite";
+import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 class Post extends React.Component {
   state = {};
 
   render() {
-    return <div>Post</div>;
+    const { classes, auth, post } = this.props;
+    const isUserPost = post.postedBy._id === auth.user._id;
+    return (
+      <Card className={classes.card}>
+        <CardHeader
+          className={classes.cardHeader}
+          avatar={<Avatar src={post.postedBy.avatar} />}
+          title={
+            <Link href={`/profile/${post.postedBy._id}`}>
+              <a>{post.postedBy.name} </a>
+            </Link>
+          }
+          action={
+            isUserPost && (
+              <IconButton className={classes.button}>
+                <DeleteTwoTone />
+              </IconButton>
+            )
+          }
+        />
+        <CardContent className={classes.cardContent}>
+          <Typography variant="body1" className={classes.text}>
+            {post.text}
+          </Typography>
+
+          {post.image && (
+            <div className={classes.imageContainer}>
+              <img className={classes.image} src={post.image} />
+            </div>
+          )}
+        </CardContent>
+
+        <CardActions>
+          <IconButton className={classes.button}>
+            <Badge badgeContent={0} color="secondary">
+              <FavoriteBorder className={classes.favoriteIcon} />
+            </Badge>
+          </IconButton>
+
+          <IconButton className={classes.button}>
+            <Badge badgeContent={0} color="primary">
+              <Comment className={classes.commentIcon} />
+            </Badge>
+          </IconButton>
+        </CardActions>
+        <Divider />
+
+        {/* coments area */}
+      </Card>
+    );
   }
 }
 
