@@ -17,7 +17,7 @@ const Index = ({ classes, auth }) => {
       {auth.user && auth.user._id ? (
         <Grid>
           <Grid item xs={12} sm={12} md={7}>
-            <PostFeed />
+            <PostFeed auth={auth} />
           </Grid>
           <Grid item className={classes.drawerContainer}>
             <Drawer
