@@ -19,8 +19,9 @@ class Post extends React.Component {
   state = {};
 
   render() {
-    const { classes, auth, post } = this.props;
+    const { classes, auth, post, isDeleting, handleDelete } = this.props;
     const isUserPost = post.postedBy._id === auth.user._id;
+
     return (
       <Card className={classes.card}>
         <CardHeader
@@ -33,7 +34,11 @@ class Post extends React.Component {
           }
           action={
             isUserPost && (
-              <IconButton className={classes.button}>
+              <IconButton
+                className={classes.button}
+                disabled={isDeleting}
+                onClick={() => handleDelete(post)}
+              >
                 <DeleteTwoTone />
               </IconButton>
             )

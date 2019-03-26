@@ -1,4 +1,4 @@
-import { addPost, getPostFeed } from "../../lib/api";
+import { addPost, getPostFeed, deletePost } from "../../lib/api";
 import Post from "./Post";
 import NewPost from "./NewPost";
 
@@ -10,6 +10,7 @@ class PostFeed extends React.Component {
     posts: [],
     text: "",
     image: "",
+    isDeleting: false,
     isAddingPost: false
   };
 
@@ -62,9 +63,31 @@ class PostFeed extends React.Component {
       });
   };
 
+  handleDeletePost = deletedPost => {
+    this.setState({ isDeleting: true });
+
+    deletePost(deletedPost._id)
+      .then(postData => {
+        // const postIndex = this.state.posts.findIndex(post=>post._id === postData._id)
+
+        const postList = this.state.posts.filter(
+          post => post._id !== postData._id
+        );
+
+        this.setState({
+          posts: postList,
+          isDeleting: false
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ isDeleting: false });
+      });
+  };
+
   render() {
     const { classes, auth } = this.props;
-    const { text, image, isAddingPost, posts } = this.state;
+    const { text, image, isAddingPost, posts, isDeleting } = this.state;
 
     return (
       <div className={classes.root}>
@@ -86,7 +109,15 @@ class PostFeed extends React.Component {
         />
 
         {posts &&
-          posts.map(post => <Post key={post._id} auth={auth} post={post} />)}
+          posts.map(post => (
+            <Post
+              key={post._id}
+              auth={auth}
+              post={post}
+              isDeleting={isDeleting}
+              handleDelete={this.handleDeletePost}
+            />
+          ))}
       </div>
     );
   }
