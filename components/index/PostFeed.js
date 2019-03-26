@@ -1,4 +1,10 @@
-import { addPost, getPostFeed, deletePost } from "../../lib/api";
+import {
+  addPost,
+  getPostFeed,
+  deletePost,
+  likePost,
+  unlikePost
+} from "../../lib/api";
 import Post from "./Post";
 import NewPost from "./NewPost";
 
@@ -85,6 +91,21 @@ class PostFeed extends React.Component {
       });
   };
 
+  handleToggleLike = post => {
+    const { auth } = this.props;
+
+    const isPostLiked = post.likes.includes(auth.user._id);
+    const sendRequest = isPostLiked ? unlikePost : likePost;
+
+    sendRequest(post._id).then(postData => {
+      const updatedPosts = this.state.posts.map(post =>
+        post._id === postData._id ? postData : post
+      );
+
+      this.setState({ posts: updatedPosts });
+    });
+  };
+
   render() {
     const { classes, auth } = this.props;
     const { text, image, isAddingPost, posts, isDeleting } = this.state;
@@ -116,6 +137,7 @@ class PostFeed extends React.Component {
               post={post}
               isDeleting={isDeleting}
               handleDelete={this.handleDeletePost}
+              toggleLike={this.handleToggleLike}
             />
           ))}
       </div>
