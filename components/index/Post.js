@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Comments from "./Comments";
 
 import Badge from "@material-ui/core/Badge";
 import Card from "@material-ui/core/Card";
@@ -15,7 +16,7 @@ import Favorite from "@material-ui/icons/Favorite";
 import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import withStyles from "@material-ui/core/styles/withStyles";
 
-class Post extends React.Component {
+class Post extends React.PureComponent {
   state = {
     isLiked: false,
     numLikes: 0,
@@ -110,6 +111,7 @@ class Post extends React.Component {
         <Divider />
 
         {/* coments area */}
+        <Comments auth={auth} comments={comments} postId={post._id} />
       </Card>
     );
   }
