@@ -25,13 +25,19 @@ class Post extends React.PureComponent {
 
   componentDidMount() {
     this.setLikes();
+    this.setComments();
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.post.likes !== this.props.post.likes) {
       this.setLikes();
     }
+    if (prevProps.post.comments.length !== this.props.post.lenght) {
+      this.setComments();
+    }
   }
+
+  setComments = () => this.setState({ comments: this.props.post.comments });
 
   setLikes = () => {
     const { auth, post } = this.props;
@@ -48,7 +54,9 @@ class Post extends React.PureComponent {
       post,
       isDeleting,
       handleDelete,
-      toggleLike
+      toggleLike,
+      handleAddComment,
+      handleDeleteComment
     } = this.props;
 
     const { numLikes, isLiked, comments } = this.state;
@@ -111,7 +119,13 @@ class Post extends React.PureComponent {
         <Divider />
 
         {/* coments area */}
-        <Comments auth={auth} comments={comments} postId={post._id} />
+        <Comments
+          handleAddComment={handleAddComment}
+          handleDelete={handleDeleteComment}
+          auth={auth}
+          comments={comments}
+          postId={post._id}
+        />
       </Card>
     );
   }

@@ -3,7 +3,9 @@ import {
   getPostFeed,
   deletePost,
   likePost,
-  unlikePost
+  unlikePost,
+  addComment,
+  deleteComment
 } from "../../lib/api";
 import Post from "./Post";
 import NewPost from "./NewPost";
@@ -46,6 +48,33 @@ class PostFeed extends React.Component {
 
     this.postData.set(e.target.name, inputValue);
     this.setState({ [e.target.name]: inputValue });
+  };
+
+  handleAddComment = (postId, text) => {
+    const comment = { text };
+    addComment(postId, comment)
+      .then(postData => {
+        const updatedPosts = this.state.posts.map(post =>
+          post._id === postData._id ? postData : post
+        );
+        this.setState({ posts: updatedPosts });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  handleDeleteComment = (postId, comment) => {
+    deleteComment(postId, comment)
+      .then(postData => {
+        const updatedPosts = this.state.posts.map(post =>
+          post._id === postData._id ? postData : post
+        );
+        this.setState({ posts: updatedPosts });
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   handleAddPost = () => {
@@ -138,6 +167,8 @@ class PostFeed extends React.Component {
               isDeleting={isDeleting}
               handleDelete={this.handleDeletePost}
               toggleLike={this.handleToggleLike}
+              handleAddComment={this.handleAddComment}
+              handleDeleteComment={this.handleDeleteComment}
             />
           ))}
       </div>

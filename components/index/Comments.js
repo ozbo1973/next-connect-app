@@ -7,12 +7,25 @@ import Input from "@material-ui/core/Input";
 import Avatar from "@material-ui/core/Avatar";
 import Delete from "@material-ui/icons/Delete";
 import withStyles from "@material-ui/core/styles/withStyles";
+import { IconButton } from "@material-ui/core";
 
 class Comments extends React.Component {
-  state = {};
+  state = { text: "" };
+
+  handleChange = e => {
+    this.setState({ text: e.target.value });
+  };
+
+  handleSubmit = e => {
+    const { text } = this.state;
+    const { postId, handleAddComment } = this.props;
+    e.preventDefault();
+    handleAddComment(postId, text);
+    this.setState({ text: "" });
+  };
 
   showComment = comment => {
-    const { postId, auth, classes } = this.props;
+    const { postId, auth, handleDelete, classes } = this.props;
     const isCommentCreator = comment.postedBy._id === auth.user._id;
     return (
       <div>
@@ -20,10 +33,16 @@ class Comments extends React.Component {
           <a>{comment.postedBy.name} </a>
         </Link>
         <br />
+        {comment.text}
         <span className={classes.commentDate}>
           {comment.createdAt}
           {isCommentCreator && (
-            <Delete color="secondary" className={classes.commentDelete} />
+            <IconButton className={classes.commentDelete}>
+              <Delete
+                onClick={() => handleDelete(postId, comment)}
+                color="secondary"
+              />
+            </IconButton>
           )}
         </span>
       </div>
@@ -32,6 +51,7 @@ class Comments extends React.Component {
 
   render() {
     const { classes, auth, postId, comments } = this.props;
+    const { text } = this.state;
     return (
       <div className={classes.comments}>
         <CardHeader
@@ -39,13 +59,15 @@ class Comments extends React.Component {
             <Avatar src={auth.user.avatar} className={classes.smallAvatar} />
           }
           title={
-            <form>
+            <form onSubmit={this.handleSubmit}>
               <FormControl margin="normal" fullWidth required>
                 <InputLabel htmlFor="add-comment">Add Comments</InputLabel>
                 <Input
                   id="add-comment"
                   name="text"
                   placeholder="add your comments"
+                  value={text}
+                  onChange={this.handleChange}
                 />
               </FormControl>
             </form>
@@ -58,7 +80,7 @@ class Comments extends React.Component {
             key={comment._id}
             avatar={
               <Avatar
-                src={comments.postedBy.avatar}
+                src={comment.postedBy.avatar}
                 className={classes.smallAvatar}
               />
             }
