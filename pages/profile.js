@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { authInitialProps } from "../lib/auth";
-import { getUser } from "../lib/api";
+import { getUser, getUserPosts } from "../lib/api";
 
 import FollowUser from "../components/profile/FollowUser";
 import DeleteUser from "../components/profile/DeleteUser";
+import ProfileTab from "../components/profile/ProfileTabs";
 
 import Paper from "@material-ui/core/Paper";
 import List from "@material-ui/core/List";
@@ -20,19 +21,28 @@ import Edit from "@material-ui/icons/Edit";
 import withStyles from "@material-ui/core/styles/withStyles";
 
 class Profile extends React.Component {
-  state = { user: null, isAuth: false, isLoading: true, isFollowing: false };
+  state = {
+    user: null,
+    isAuth: false,
+    isLoading: true,
+    isFollowing: false,
+    posts: []
+  };
 
   componentDidMount() {
     const { userId, auth } = this.props;
 
-    getUser(userId).then(user => {
+    getUser(userId).then(async user => {
       const isAuth = auth.user._id === userId;
       const isFollowing = this.checkFollowing(auth, user);
-      this.setState({
-        user,
-        isAuth,
-        isFollowing,
-        isLoading: false
+      await getUserPosts(userId).then(posts => {
+        this.setState({
+          user,
+          posts,
+          isAuth,
+          isFollowing,
+          isLoading: false
+        });
       });
     });
   }
@@ -55,8 +65,8 @@ class Profile extends React.Component {
   };
 
   render() {
-    const { classes, userId } = this.props;
-    const { isLoading, isFollowing, user, isAuth } = this.state;
+    const { classes, userId, auth } = this.props;
+    const { isLoading, isFollowing, user, isAuth, posts } = this.state;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography
@@ -110,6 +120,8 @@ class Profile extends React.Component {
                 secondary={`joined: ${user.createdAt}`}
               />
             </ListItem>
+
+            <ProfileTab posts={posts} auth={auth} user={user} />
           </List>
         )}
       </Paper>
