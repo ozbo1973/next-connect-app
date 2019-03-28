@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { authInitialProps } from "../lib/auth";
-import { getUser, getUserPosts } from "../lib/api";
+import {
+  getUser,
+  getUserPosts,
+  addComment,
+  deleteComment,
+  deletePost,
+  likePost,
+  unlikePost
+} from "../lib/api";
 
 import FollowUser from "../components/profile/FollowUser";
 import DeleteUser from "../components/profile/DeleteUser";
@@ -26,6 +34,7 @@ class Profile extends React.Component {
     isAuth: false,
     isLoading: true,
     isFollowing: false,
+    isDeleting: false,
     posts: []
   };
 
@@ -47,6 +56,70 @@ class Profile extends React.Component {
     });
   }
 
+  handleDeletePost = deletedPost => {
+    this.setState({ isDeleting: true });
+
+    deletePost(deletedPost._id)
+      .then(postData => {
+        // const postIndex = this.state.posts.findIndex(post=>post._id === postData._id)
+
+        const postList = this.state.posts.filter(
+          post => post._id !== postData._id
+        );
+
+        this.setState({
+          posts: postList,
+          isDeleting: false
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({ isDeleting: false });
+      });
+  };
+
+  handleAddComment = (postId, text) => {
+    const comment = { text };
+    addComment(postId, comment)
+      .then(postData => {
+        const updatedPosts = this.state.posts.map(post =>
+          post._id === postData._id ? postData : post
+        );
+        this.setState({ posts: updatedPosts });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  handleDeleteComment = (postId, comment) => {
+    deleteComment(postId, comment)
+      .then(postData => {
+        const updatedPosts = this.state.posts.map(post =>
+          post._id === postData._id ? postData : post
+        );
+        this.setState({ posts: updatedPosts });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
+
+  handleToggleLike = post => {
+    const { auth } = this.props;
+
+    const isPostLiked = post.likes.includes(auth.user._id);
+    const sendRequest = isPostLiked ? unlikePost : likePost;
+
+    sendRequest(post._id).then(postData => {
+      const updatedPosts = this.state.posts.map(post =>
+        post._id === postData._id ? postData : post
+      );
+
+      this.setState({ posts: updatedPosts });
+    });
+  };
+
   checkFollowing = (auth, user) => {
     return (
       user.followers.findIndex(follower => follower._id === auth.user._id) > -1
@@ -66,7 +139,14 @@ class Profile extends React.Component {
 
   render() {
     const { classes, userId, auth } = this.props;
-    const { isLoading, isFollowing, user, isAuth, posts } = this.state;
+    const {
+      isLoading,
+      isFollowing,
+      user,
+      isAuth,
+      isDeleting,
+      posts
+    } = this.state;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography
@@ -121,7 +201,15 @@ class Profile extends React.Component {
               />
             </ListItem>
 
-            <ProfileTab posts={posts} auth={auth} user={user} />
+            <ProfileTab
+              posts={posts}
+              auth={auth}
+              user={user}
+              handleAddComment={this.handleAddComment}
+              handleDeleteComment={this.handleDeleteComment}
+              handleDeletePost={this.handleDeletePost}
+              handleToggleLike={this.handleToggleLike}
+            />
           </List>
         )}
       </Paper>
