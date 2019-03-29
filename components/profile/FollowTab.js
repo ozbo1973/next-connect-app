@@ -1,10 +1,32 @@
-// import Avatar from "@material-ui/core/Avatar";
-// import Typography from "@material-ui/core/Typography";
-// import GridList from "@material-ui/core/GridList";
-// import GridListTile from "@material-ui/core/GridListTile";
+import Link from "next/link";
+import Avatar from "@material-ui/core/Avatar";
+import Typography from "@material-ui/core/Typography";
+import GridList from "@material-ui/core/GridList";
+import GridListTile from "@material-ui/core/GridListTile";
 import withStyles from "@material-ui/core/styles/withStyles";
 
-const FollowTab = () => <div>FollowTab</div>;
+const FollowTab = ({ classes, user }) => (
+  <div className={classes.root}>
+    <GridList cellHeight={160} className={classes.gridList} cols={4}>
+      {user.map(id => (
+        <GridListTile style={{ height: 120 }} key={id._id}>
+          <Link href={`/profile/${id._id}`}>
+            <a>
+              <Avatar src={id.avatar} className={classes.bigAvatar} />
+              <Typography
+                component="h3"
+                variant="subtitle1"
+                className={classes.tileText}
+              >
+                {id.name}
+              </Typography>
+            </a>
+          </Link>
+        </GridListTile>
+      ))}
+    </GridList>
+  </div>
+);
 
 const styles = theme => ({
   root: {

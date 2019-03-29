@@ -1,4 +1,5 @@
 import Post from "../index/Post";
+import FollowTab from "./FollowTab";
 
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
@@ -21,6 +22,7 @@ class ProfileTabs extends React.Component {
     const {
       posts,
       auth,
+      user,
       handleAddComment,
       handleDeleteComment,
       handleDeletePost,
@@ -55,6 +57,18 @@ class ProfileTabs extends React.Component {
                   toggleLike={handleToggleLike}
                 />
               ))}
+            </TabContainer>
+          )}
+
+          {tab === 1 && (
+            <TabContainer>
+              <FollowTab user={user.followers} />
+            </TabContainer>
+          )}
+
+          {tab === 2 && (
+            <TabContainer>
+              <FollowTab user={user.following} />
             </TabContainer>
           )}
         </AppBar>
