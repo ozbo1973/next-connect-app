@@ -9,6 +9,7 @@ import {
   likePost,
   unlikePost
 } from "../lib/api";
+import { formatDate } from "../lib/dateFn";
 
 import FollowUser from "../components/profile/FollowUser";
 import DeleteUser from "../components/profile/DeleteUser";
@@ -197,7 +198,7 @@ class Profile extends React.Component {
               <Divider />
               <ListItemText
                 primary={user.about}
-                secondary={`joined: ${user.createdAt}`}
+                secondary={`joined: ${formatDate(user.createdAt)}`}
               />
             </ListItem>
 

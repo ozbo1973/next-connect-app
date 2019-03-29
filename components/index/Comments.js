@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { formatTimeCreated } from "../../lib/dateFn";
 
 import CardHeader from "@material-ui/core/CardHeader";
 import FormControl from "@material-ui/core/FormControl";
@@ -35,7 +36,7 @@ class Comments extends React.Component {
         <br />
         {comment.text}
         <span className={classes.commentDate}>
-          {comment.createdAt}
+          {formatTimeCreated(comment.createdAt)}
           {isCommentCreator && (
             <IconButton className={classes.commentDelete}>
               <Delete

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { formatTimeCreated } from "../../lib/dateFn";
+
 import Comments from "./Comments";
 
 import Badge from "@material-ui/core/Badge";
@@ -83,6 +85,7 @@ class Post extends React.PureComponent {
               </IconButton>
             )
           }
+          subheader={formatTimeCreated(post.createdAt)}
         />
         <CardContent className={classes.cardContent}>
           <Typography variant="body1" className={classes.text}>
